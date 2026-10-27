@@ -9,31 +9,41 @@
 <style>
 
 body{
+    background:#f3f5f4;
     font-family:Arial;
-    background:#f5f5f5;
-    padding:30px;
+    padding:20px;
 }
 
 .card{
     max-width:500px;
     margin:auto;
     background:white;
-    padding:20px;
-    border-radius:10px;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 3px 15px rgba(0,0,0,.1);
+}
+
+h2{
+    text-align:center;
+    color:#1D5D4F;
 }
 
 input{
     width:100%;
-    padding:10px;
-    margin:10px 0;
+    padding:12px;
+    margin:10px 0 20px;
+    border:1px solid #ddd;
+    border-radius:10px;
 }
 
 button{
     width:100%;
-    padding:12px;
-    background:#0078d4;
+    padding:14px;
+    background:#1D5D4F;
     color:white;
     border:none;
+    border-radius:10px;
+    font-size:16px;
 }
 
 </style>
@@ -44,15 +54,18 @@ button{
 
 <div class="card">
 
+<div style="text-align:center">
+    <img src="太興logo.jpg" width="180">
+</div>    
+    
 <h2>禮券簽收系統</h2>
 
 <label>紙箱號碼</label>
-
 <input id="boxNo" readonly>
 
 <label>員工編號</label>
-
 <input id="staffNo">
+
 
 <button onclick="testSubmit()">
 確認簽收
