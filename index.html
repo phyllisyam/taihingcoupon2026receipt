@@ -283,13 +283,23 @@ async function loadBoxInfo(){
 
             if(data.receiptTime){
 
-                document.getElementById(
-                "receiptStatus"
-                ).innerHTML +=
-                "<br>簽收時間：" +
-                data.receiptTime;
+    const dt =
+    new Date(data.receiptTime);
 
-            }
+    const displayTime =
+    dt.getFullYear() + "-" +
+    String(dt.getMonth()+1).padStart(2,"0") + "-" +
+    String(dt.getDate()).padStart(2,"0") + " " +
+    String(dt.getHours()).padStart(2,"0") + ":" +
+    String(dt.getMinutes()).padStart(2,"0");
+
+    document.getElementById(
+    "receiptStatus"
+    ).innerHTML +=
+    "<br>簽收時間：" +
+    displayTime;
+
+}
 
             document.getElementById(
             "staffNo"
