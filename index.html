@@ -241,6 +241,39 @@ async function loadBoxInfo(){
         const data =
         await response.json();
 
+        loadBoxInfo();
+
+async function loadBoxInfo(){
+
+    const response = await fetch(
+        "LOOKUP_FLOW_URL",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                boxNo:boxNo
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("storeName")
+        .innerHTML =
+        "店舖：" + data.storeName;
+
+    document.getElementById("storeCode")
+        .innerHTML =
+        "店號：" + data.storeCode;
+
+    document.getElementById("receiptStatus")
+        .innerHTML =
+        "⏳ 待簽收";
+
+}
+
         document.getElementById("storeName")
             .innerHTML =
             "店舖：" + data.storeName;
