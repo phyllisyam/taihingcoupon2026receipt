@@ -273,11 +273,12 @@ async function loadBoxInfo(){
 
             if(data.staffNo){
 
-                document.getElementById(
-                "receiptStatus"
-                ).innerHTML +=
-                "<br>簽收員工：" +
-                data.staffNo;
+    document.getElementById(
+    "receiptStatus"
+    ).innerHTML +=
+    "<br>簽收員工：<strong>" +
+    data.staffNo +
+    "</strong>";
 
             }
 
