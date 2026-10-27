@@ -1,49 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-HK">
+
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>2026 20送3 禮券簽收系統</title>
+<title>2026 太興20送3 禮券簽收系統</title>
 
 <style>
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    background:#f3f5f4;
-    font-family:Arial;
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+    background:#f5f2fb;
     padding:20px;
 }
 
-.card{
-    max-width:500px;
+.container{
+    max-width:480px;
     margin:auto;
-    background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 3px 15px rgba(0,0,0,.1);
 }
 
-h2{
+.card{
+    background:white;
+    border-radius:18px;
+    padding:24px;
+    border-top:6px solid #4B2E83;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+.logo{
     text-align:center;
-    color:#1D5D4F;
+    margin-bottom:15px;
+}
+
+.logo img{
+    width:100px;
+    height:auto;
+}
+
+.title{
+    text-align:center;
+    color:#4B2E83;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:24px;
+}
+
+.label{
+    font-weight:600;
+    color:#333;
+    margin-bottom:8px;
 }
 
 input{
     width:100%;
-    padding:12px;
-    margin:10px 0 20px;
+    padding:14px;
     border:1px solid #ddd;
     border-radius:10px;
+    margin-bottom:20px;
+    font-size:16px;
+}
+
+.readonly{
+    background:#f5f5f5;
 }
 
 button{
     width:100%;
-    padding:14px;
-    background:#1D5D4F;
-    color:white;
+    padding:15px;
     border:none;
     border-radius:10px;
-    font-size:16px;
+    background:#4B2E83;
+    color:white;
+    font-size:18px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#372062;
+}
+
+button:disabled{
+    background:#999;
+}
+
+.result{
+    display:none;
+    margin-top:20px;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:600;
+}
+
+.success{
+    background:#e7f8ee;
+    color:#18864b;
+}
+
+.error{
+    background:#fdeaea;
+    color:#c62828;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#888;
+    font-size:12px;
+}
+
+.boxinfo{
+    background:#f8f5ff;
+    border:1px solid #e0d8ff;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:20px;
+    color:#4B2E83;
 }
 
 </style>
@@ -52,26 +138,55 @@ button{
 
 <body>
 
+<div class="container">
+
 <div class="card">
 
-<div style="text-align:center">
-    <img src="太興logo.jpg" width="90">
-</div>    
-    
-<h2>2026 20送3 禮券簽收系統</h2>
+<div class="logo">
+    <img src="太興logo.jpg" alt="Tai Hing Logo">
+</div>
 
-<label>紙箱號碼</label>
-<input id="boxNo" readonly>
+<div class="title">
+    2026 太興20送3 禮券簽收系統
+</div>
 
-<label>員工編號</label>
-<input id="staffNo">
+<div class="boxinfo">
+    請核對紙箱號碼後輸入員工編號進行簽收。
+</div>
 
+<div class="label">
+    紙箱號碼
+</div>
 
-<button onclick="testSubmit()">
-確認簽收
+<input
+    id="boxNo"
+    class="readonly"
+    readonly>
+
+<div class="label">
+    員工編號
+</div>
+
+<input
+    id="staffNo"
+    placeholder="請輸入員工編號">
+
+<button
+    id="submitBtn"
+    onclick="submitReceipt()">
+    確認簽收
 </button>
 
-<p id="msg"></p>
+<div
+    id="result"
+    class="result">
+</div>
+
+</div>
+
+<div class="footer">
+    Tai Hing Group © 2026
+</div>
 
 </div>
 
@@ -80,21 +195,113 @@ button{
 const params =
 new URLSearchParams(window.location.search);
 
-document.getElementById("boxNo").value =
+const boxNo =
 params.get("box") || "";
 
-function testSubmit(){
+document.getElementById("boxNo").value =
+boxNo;
 
-    let staff =
-    document.getElementById("staffNo").value;
+async function submitReceipt(){
 
-    document.getElementById("msg").innerHTML =
-    "成功提交<br>Staff No: "
-    + staff;
+    const staffNo =
+    document.getElementById("staffNo")
+    .value
+    .trim();
+
+    const resultBox =
+    document.getElementById("result");
+
+    if(boxNo === ""){
+        resultBox.style.display="block";
+        resultBox.className="result error";
+        resultBox.innerHTML="❌ 找不到紙箱號碼";
+        return;
+    }
+
+    if(staffNo === ""){
+        resultBox.style.display="block";
+        resultBox.className="result error";
+        resultBox.innerHTML="❌ 請輸入員工編號";
+        return;
+    }
+
+    const btn =
+    document.getElementById("submitBtn");
+
+    btn.disabled = true;
+    btn.innerText = "提交中...";
+
+    try{
+
+        /*
+        Power Automate URL
+        將下面網址改成你的 HTTP Trigger URL
+        */
+
+        const response =
+        await fetch(
+            "PASTE_YOUR_POWER_AUTOMATE_URL_HERE",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    boxNo:boxNo,
+                    staffNo:staffNo
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        resultBox.style.display="block";
+
+        if(data.success){
+
+            resultBox.className="result success";
+
+            resultBox.innerHTML=
+            "✅ 簽收成功";
+
+            document.getElementById("staffNo")
+            .disabled=true;
+
+        }else{
+
+            resultBox.className="result error";
+
+            resultBox.innerHTML=
+            "⚠️ " +
+            (data.message || "簽收失敗");
+
+            btn.disabled=false;
+            btn.innerText="確認簽收";
+        }
+
+    }
+    catch(error){
+
+        resultBox.style.display="block";
+
+        resultBox.className=
+        "result error";
+
+        resultBox.innerHTML=
+        "❌ 系統連線失敗";
+
+        btn.disabled=false;
+        btn.innerText="確認簽收";
+
+        console.error(error);
+
+    }
 
 }
 
 </script>
 
 </body>
+
 </html>
