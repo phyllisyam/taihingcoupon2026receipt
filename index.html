@@ -132,6 +132,16 @@ button:disabled{
     color:#4B2E83;
 }
 
+.pending{
+    color:#e67e22;
+    font-weight:bold;
+}
+
+.received{
+    color:#27ae60;
+    font-weight:bold;
+}
+    
 </style>
 
 </head>
@@ -151,7 +161,17 @@ button:disabled{
 </div>
 
 <div class="boxinfo">
-    請核對紙箱號碼後輸入員工編號進行簽收。
+
+<div id="storeName">
+載入店舖資料中...
+</div>
+
+<div id="storeCode">
+</div>
+
+<div id="receiptStatus">
+</div>
+
 </div>
 
 <div class="label">
@@ -196,11 +216,67 @@ const params =
 new URLSearchParams(window.location.search);
 
 const boxNo =
-params.get("box") || "";
+params.get("box") || "";loadBoxInfo();
 
 document.getElementById("boxNo").value =
 boxNo;
 
+async function loadBoxInfo(){
+
+    try{
+
+        const response =
+        await fetch(
+        "https://defaultb5c6ebdd19144d1c81ba09b2a50a01.c7.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/18/workflows/d361f00ad685485e852d96fd85dcb89b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=3QUiD3yAY0sB3zJplLLWdwayVTlfJOrU00oVfwF2upc",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                boxNo:boxNo
+            })
+        });
+
+        const data =
+        await response.json();
+
+        document.getElementById("storeName")
+            .innerHTML =
+            "店舖：" + data.storeName;
+
+        document.getElementById("storeCode")
+            .innerHTML =
+            "店號：" + data.storeCode;
+
+       if(data.status=="Received"){
+
+    document.getElementById(
+    "receiptStatus"
+    ).innerHTML =
+    "<span class='received'>✅ 已簽收</span>";
+
+}
+else{
+
+    document.getElementById(
+    "receiptStatus"
+    ).innerHTML =
+    "<span class='pending'>⏳ 待簽收</span>";
+
+}
+
+    }
+    catch(error){
+
+        document.getElementById("storeName")
+            .innerHTML =
+            "無法載入店舖資料";
+
+    }
+
+}
+    
 async function submitReceipt(){
 
     const staffNo =
